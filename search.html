@@ -34,7 +34,7 @@
         </div>
         <div class="text-center mb-4">
             <button class="btn btn-secondary" onclick="openCamera()">📷 Open Camera Scanner</button>
-            <button class="btn btn-warning" onclick="toggleCamera()">🔄 Flip Camera</button>
+            <button class="btn btn-secondary" onclick="toggleCamera()">🔄 Flip Camera</button>
         </div>
         <video id="cameraPreview" autoplay></video>
 
@@ -81,12 +81,28 @@
         const medications = [
             { name: "Paracetamol", description: "Pain reliever and fever reducer.", price: 250, image: "https://via.placeholder.com/300x200?text=Paracetamol", quantity: 20, sold: 0 },
             { name: "Ibuprofen", description: "Reduces inflammation and pain.", price: 500, image: "https://via.placeholder.com/300x200?text=Ibuprofen", quantity: 20, sold: 0 },
-            // Add other medications as needed
+            { name: "Amoxicillin", description: "Antibiotic for bacterial infections.", price: 1000, image: "https://via.placeholder.com/300x200?text=Amoxicillin", quantity: 20, sold: 0 },
+            { name: "Cetirizine", description: "Allergy medication.", price: 400, image: "https://via.placeholder.com/300x200?text=Cetirizine", quantity: 20, sold: 0 },
+            { name: "Aspirin", description: "Anti-inflammatory, pain reliever.", price: 600, image: "https://via.placeholder.com/300x200?text=Aspirin", quantity: 20, sold: 0 },
+            { name: "Ciprofloxacin", description: "Antibiotic for infections.", price: 1500, image: "https://via.placeholder.com/300x200?text=Ciprofloxacin", quantity: 20, sold: 0 },
+            { name: "Metformin", description: "Used for type 2 diabetes management.", price: 2000, image: "https://via.placeholder.com/300x200?text=Metformin", quantity: 20, sold: 0 },
+            { name: "Lisinopril", description: "Used for high blood pressure.", price: 1300, image: "https://via.placeholder.com/300x200?text=Lisinopril", quantity: 20, sold: 0 },
+            { name: "Atorvastatin", description: "Cholesterol-lowering drug.", price: 2500, image: "https://via.placeholder.com/300x200?text=Atorvastatin", quantity: 20, sold: 0 },
+            { name: "Omeprazole", description: "Treats acid reflux.", price: 800, image: "https://via.placeholder.com/300x200?text=Omeprazole", quantity: 20, sold: 0 },
+            { name: "Gabapentin", description: "Treats neuropathy and seizures.", price: 900, image: "https://via.placeholder.com/300x200?text=Gabapentin", quantity: 20, sold: 0 },
+            { name: "Prednisolone", description: "Steroid for inflammation.", price: 1600, image: "https://via.placeholder.com/300x200?text=Prednisolone", quantity: 20, sold: 0 },
+            { name: "Levothyroxine", description: "Thyroid hormone replacement.", price: 1200, image: "https://via.placeholder.com/300x200?text=Levothyroxine", quantity: 20, sold: 0 },
+            { name: "Furosemide", description: "Used for fluid retention.", price: 1100, image: "https://via.placeholder.com/300x200?text=Furosemide", quantity: 20, sold: 0 },
+            { name: "Diazepam", description: "Used for anxiety and seizures.", price: 750, image: "https://via.placeholder.com/300x200?text=Diazepam", quantity: 20, sold: 0 },
+            { name: "Alprazolam", description: "Anti-anxiety medication.", price: 700, image: "https://via.placeholder.com/300x200?text=Alprazolam", quantity: 20, sold: 0 },
+            { name: "Clonazepam", description: "Used for seizures and anxiety.", price: 950, image: "https://via.placeholder.com/300x200?text=Clonazepam", quantity: 20, sold: 0 },
+            { name: "Losartan", description: "Used for high blood pressure.", price: 1300, image: "https://via.placeholder.com/300x200?text=Losartan", quantity: 20, sold: 0 },
+            { name: "Azithromycin", description: "Antibiotic for infections.", price: 1200, image: "https://via.placeholder.com/300x200?text=Azithromycin", quantity: 20, sold: 0 },
+            { name: "Hydrochlorothiazide", description: "Used for high blood pressure.", price: 850, image: "https://via.placeholder.com/300x200?text=Hydrochlorothiazide", quantity: 20, sold: 0 }
         ];
 
         let selectedDrug = null;
-        let currentStream = null;
-        let currentFacingMode = 'environment'; // Default to back camera
+        let currentCamera = 'environment'; // Default camera (back)
 
         function displayMedications(meds) {
             const medicationList = document.getElementById("medicationList");
@@ -110,9 +126,8 @@
 
         function openCamera() {
             const cameraPreview = document.getElementById('cameraPreview');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } })
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: currentCamera } })
                 .then(stream => {
-                    currentStream = stream;
                     cameraPreview.srcObject = stream;
                     cameraPreview.style.display = 'block';
                     cameraPreview.addEventListener('click', captureAndScan);
@@ -121,11 +136,8 @@
         }
 
         function toggleCamera() {
-            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment'; // Toggle between back and front camera
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop()); // Stop the current camera stream
-            }
-            openCamera(); // Reopen with the new facing mode
+            currentCamera = (currentCamera === 'environment') ? 'user' : 'environment'; // Switch between back and front camera
+            openCamera();
         }
 
         function captureAndScan() {
@@ -135,7 +147,7 @@
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            currentStream.getTracks().forEach(track => track.stop());
+            video.srcObject.getTracks().forEach(track => track.stop());
             video.style.display = 'none';
 
             Tesseract.recognize(canvas.toDataURL(), 'eng')
@@ -190,6 +202,7 @@
 
         window.onload = () => displayMedications(medications);
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
